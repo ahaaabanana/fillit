@@ -2,11 +2,13 @@
 # define FILLIT_H
 # include <stdio.h>
 # include <stdlib.h>
+# include <unistd.h>
 # include <fcntl.h>
 
 typedef struct	s_tetrimino
 {
-	char		content[6][7];
+	char		content[4][5];
+	int 		min_pos[2][4];
 	char 		name;
 }				t_tetrimino;
 
