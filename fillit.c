@@ -1,151 +1,128 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   fillit.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tgrandpa <tgrandpa@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/07/22 13:42:24 by tgrandpa          #+#    #+#             */
+/*   Updated: 2019/07/23 14:31:25 by tgrandpa         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "fillit.h"
 #include "libft/libft.h"
 
-/* CHECK */
-void 	init_tetr_content(char content[6][7])
+void	show_content(char content[4][5])
+{
+	int 	i = -1;
+
+	while (++i < 4)
+	{
+		ft_putstr(content[i]);
+		ft_putchar(10);
+	}
+	ft_putchar(10);
+}
+
+void	show_min_pos(int min_pos[4][2])
+{
+	int 	i;
+	int		j;
+
+	i = -1;
+	while (++i < 4)
+	{
+		printf("%d ", min_pos[i][0]);
+		printf("%d\n", min_pos[i][1]);
+	}
+	ft_putchar(10);
+}
+
+void	show_all(t_tetrimino *tetr)
+{
+	while (tetr)
+	{
+		show_content(tetr->content);
+		show_min_pos(tetr->min_pos);
+		tetr = tetr->next;
+	}
+}
+
+void	clean_tetr(char content[4][5])
 {
 	int 	i;
 	int 	j;
 
 	i = -1;
-	while(++i < 6)
+	while (++i < 4)
 	{
 		j = -1;
-		while (++j < 6)
+		while (++j < 4)
 			content[i][j] = '.';
-		content[i][j] = 0;
 	}
 }
 
-int 			check_tetr_line(char *line)
-{
-	int 	i;
-	
-	i = -1;
-	while(++i < 4)
-		if (line[i] != '.' && line[i] != '#')
-			return (0);
-	return (1);
-}
-
-int 	is_correct_tetr(char tetr_check[6][7])
+void	move_tetr(t_tetrimino *tetr)
 {
 	int		i;
-	int 	j;
-	int 	counter;
-
-	i = -1;
-	counter = 0;
-	while (++i < 4)
-	{
-		j = -1;
-		while (++j < 4)
-			if (tetr_check[i + 1][j + 1] == '#')
-			{
-				if (tetr_check[i][j + 1] == '#')
-					counter++;
-				if (tetr_check[i + 2][j + 1] == '#')
-					counter++;
-				if (tetr_check[i + 1][j] == '#')
-					counter++;
-				if (tetr_check[i + 1][j + 2] == '#')
-					counter++;
-			}
-	}
-	if (counter == 6 || counter == 8)
-		return (1);
-	return (0);
-}
-
-int 		check_tetrimino(int fd, char tetr_check[6][7])
-{
-	int 			ret;
-	int 			i;
-	char 			c;
+	int		n;
+	int		m;
+	int		l;
 	
-	init_tetr_content(tetr_check);
-	i = 0;
-	while ((ret = read(fd, tetr_check[++i] + 1, 4)))
-	{
-		if (ret == 4 && read(fd, &c, 1) && c == 10)
-		{
-			if (!(check_tetr_line(tetr_check[i] + 1)))
-				return (0);
-		}
-		else
-			return (0);
-		if (i == 4 && is_correct_tetr(tetr_check))
-		{
-			i = 0;
-			read(fd, &c, 1);
-		}
-	}
-	if (i != 1)
-		return (0);
-	return (1);
-}
-/* ---------------------------------------------------- */
-
-void 	make_tetr(int fd)
-{
-	t_tetrimino		tetr;
-	int 			i;
-	int 			j;
-	int 			counter;
-	char 			c;
-
-	i = -1;
-	while (read(fd, tetr.content[++i], 4))
-	{
-		tetr.content[i][4] = 0;
-		if (i == 3)
-			i = 0;
-		read(fd, &c, 1);
-	}
-	i = -1;
-	counter = 0;
-	while (++i < 4)
-	{
-		j = -1;
-		while (++j < 4)
-			if (tetr.content[i][j] == '#')
+	ft_putstr("SOMETEXT\n\n");
+	clean_tetr(tetr->content);
+	n = 0;
+	m = -1;
+	while (1)
+	{	
+		if (l == 2)
+			break ;
+		l = 0;
+		++m;
+		i = -1;
+		while (++i < 4)
+			tetr->content[tetr->min_pos[i][0] + n][tetr->min_pos[i][1] + m] = tetr->name;
+		show_content(tetr->content);
+		clean_tetr(tetr->content);
+		i = -1;
+		while (++i < 4)
+			if ((tetr->min_pos[i][1] + m) == 3)
 			{
-				tetr.min_pos[0][counter] = i;
-				tetr.min_pos[1][counter] = j;
+				m = -1;
+				n++;
+				l = 1;
+				break ;
 			}
-		counter++;
+		i = -1;		
+		while (++i < 4)
+			if ((tetr->min_pos[i][0] + n) == 3 && l == 1)
+				l++;
 	}
-	i = -1;
-	while (++i < 4)
-		printf("%d ", tetr.min_pos[0][i]);
-	i = -1;
-	while (++i < 4)
-		printf("%d ", tetr.min_pos[1][i]);
 }
 
 int 	main(int argc, char **argv)
 {
 	int 			fd;
-	char 			tetr_check[6][7];
-	t_tetrimino 	tetr;
+	t_tetrimino		*tetr;
 
 	if (argc == 2)
 	{
 		fd = open(argv[1], O_RDONLY);
-		if (check_tetrimino(fd, tetr_check))
+		if (check_file(fd))
 		{
+			ft_putstr("correct file\n");
 			close(fd);
 			fd = open(argv[1], O_RDONLY);
-			make_tetr(fd);
+			tetr = read_tetriminos(fd, tetr);
+			show_all(tetr);
+			move_tetr(tetr->next->next);
+			close(fd);
 		}
 		else
-		{
-			ft_putstr("error");
-		}
-		close(fd);
+			ft_putstr("error\n");
 	}
 	else
-		ft_putstr("usage: ./fillit source file");
-	// ft_putchar(10);
+		ft_putstr("usage: ./fillit source file\n");
 	return (0);
 }
