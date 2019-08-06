@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   fillit.c                                           :+:      :+:    :+:   */
+/*   planB.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tgrandpa <tgrandpa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 13:42:24 by tgrandpa          #+#    #+#             */
-/*   Updated: 2019/08/06 16:52:58 by tgrandpa         ###   ########.fr       */
+/*   Updated: 2019/08/06 12:08:30 by tgrandpa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,16 +160,14 @@ int     check_sqr_line(t_minsqr *minsqr, t_tetrimino *tetr, int line_i, int line
                     l = -1;
                     while (++l < 4)
                         minsqr->content[tetr->min_pos[l][0] + line_i][tetr->min_pos[l][1] + tetr->counter + (line_j <= 3 ? 0 : line_j - 3)] = tetr->name;
-					tetr->line_i = line_i;
-					tetr->line_j = line_j;
                     return (1);
                 }
-				l = -1;
-				while (++l < 4)
-					if ((tetr->min_pos[l][1] + tetr->counter) == 3)
-						break ;
-				if (l != 4)
-					break ;
+                l = -1;
+                while (++l < 4)
+                    if ((tetr->min_pos[l][1] + tetr->counter) == 3)
+                        break ;
+                if (l != 4)
+                    break ;
             }
 		tetr->counter = -1;
 	}
@@ -196,7 +194,7 @@ void    change_arr_dots(t_minsqr *minsqr, int line_i)
 int     putted_tetr(t_minsqr *minsqr, t_tetrimino *tetr)
 {
     int     i;
-	
+
     i = -1;
     while (++i < minsqr->length)
     {
@@ -210,45 +208,26 @@ int     putted_tetr(t_minsqr *minsqr, t_tetrimino *tetr)
     return (0);
 }
 
-void    clear_minsqr_tetr(t_minsqr *minsqr, t_tetrimino *tetr, int line_i, int line_j)
-{
-    int     l;
-
-    l = -1;
-    while (++l < 4)
-        minsqr->content[tetr->min_pos[l][0] + line_i][tetr->min_pos[l][1] + tetr->counter + (line_j <= 3 ? 0 : line_j - 3)] = '.';
-}
 
 void	solution(t_tetrimino *tetr)
 {
 	t_minsqr minsqr;
-	int		i;
 
-	i = -1;
 	minsqr = min_sqr_init(tetr);
 	show_min_sqr(&minsqr);
-	while (++i < 7)
+	while (tetr)
     {
         if (putted_tetr(&minsqr, tetr))
         {
 			show_min_sqr(&minsqr);
-			printf("t->line_i = %d, t->line_j = %d\n", tetr->line_i, tetr->line_j);
-			printf("counter = %d\n", tetr->counter);
             tetr = tetr->next;
         }
         else
         {
             ft_putstr("NO PLACE TO PUT THIS TETR\n");
-			// clear_minsqr_tetr(&minsqr, tetr->prev, tetr->prev->line_i, tetr->prev->line_j);
-            // break ;
+            break ;
         }
     }
-	/* while (tetr)
-	{
-		show_content(tetr->content);
-		printf("counter = %d\n", tetr->counter);
-		tetr = tetr->next;
-	} */
 }
 
 int 	main(int argc, char **argv)

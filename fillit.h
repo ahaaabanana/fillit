@@ -6,7 +6,7 @@
 /*   By: tgrandpa <tgrandpa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/22 13:42:28 by tgrandpa          #+#    #+#             */
-/*   Updated: 2019/07/23 11:28:35 by tgrandpa         ###   ########.fr       */
+/*   Updated: 2019/08/06 13:11:48 by tgrandpa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,19 @@ typedef struct			s_tetrimino
 	char				content[4][5];
 	int 				min_pos[4][2];
 	char 				name;
+	int					counter;
+	int					line_i;
+	int					line_j;
 	struct s_tetrimino	*next;
+	struct s_tetrimino	*prev;
 }						t_tetrimino;
+
+typedef struct	s_minsqr
+{
+	char	**content;
+	int		length;
+	int		*dots;
+}				t_minsqr;
 // general functions
 void			show_content(char content[4][5]);
 void			show_min_pos(int min_pos[4][2]);

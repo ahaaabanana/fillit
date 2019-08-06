@@ -1,0 +1,89 @@
+MIRROR
+int     check_sqr_line(t_minsqr *minsqr, t_tetrimino *tetr, int line_i, int line_j)
+{
+    int     l;
+
+    while (++line_j < minsqr->length)
+	{
+        if (line_j == 0 || minsqr->content[line_i][line_j] == '.')
+            while (1)
+            {
+                l = -1;
+                tetr->counter++;
+                while (++l < 4)
+                    if (minsqr->content[tetr->min_pos[l][0] + line_i][tetr->min_pos[l][1] + tetr->counter + (line_j <= 3 ? 0 : line_j - 3)] != '.')
+                        break ;
+                if (l == 4)
+                {
+                    l = -1;
+                    while (++l < 4)
+                        minsqr->content[tetr->min_pos[l][0] + line_i][tetr->min_pos[l][1] + tetr->counter + (line_j <= 3 ? 0 : line_j - 3)] = tetr->name;
+                    return (1);
+                }
+                l = -1;
+                while (++l < 4)
+                    if ((tetr->min_pos[l][1] + tetr->counter) == 3)
+                        break ;
+                if (l != 4)
+                    break ;
+            }
+		tetr->counter = -1;
+	}
+    return (0);
+}
+
+void    change_arr_dots(t_minsqr *minsqr, int line_i)
+{
+    int     j;
+
+    while (++line_i < minsqr->length)
+    {
+        j = -1;
+        while (++j < minsqr->length)
+            if (minsqr->content[line_i][j] == '.')
+            {
+                minsqr->dots[line_i] = j;
+                return ;
+            }
+        minsqr->dots[line_i] = -1;
+    }
+}
+
+int     putted_tetr(t_minsqr *minsqr, t_tetrimino *tetr)
+{
+    int     i;
+
+    i = -1;
+    while (++i < minsqr->length)
+    {
+        if (minsqr->dots[i] >= 0)
+            if (check_sqr_line(minsqr, tetr, i, minsqr->dots[i] - 1))
+            {
+                change_arr_dots(minsqr, i - 1);
+                return (1);
+            }
+    }
+    return (0);
+}
+
+
+void	solution(t_tetrimino *tetr)
+{
+	t_minsqr minsqr;
+
+	minsqr = min_sqr_init(tetr);
+	show_min_sqr(&minsqr);
+	while (tetr)
+    {
+        if (putted_tetr(&minsqr, tetr))
+        {
+			show_min_sqr(&minsqr);
+            tetr = tetr->next;
+        }
+        else
+        {
+            ft_putstr("NO PLACE TO PUT THIS TETR\n");
+            break ;
+        }
+    }
+}

@@ -6,7 +6,7 @@
 /*   By: tgrandpa <tgrandpa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/23 10:12:37 by tgrandpa          #+#    #+#             */
-/*   Updated: 2019/07/23 11:48:53 by tgrandpa         ###   ########.fr       */
+/*   Updated: 2019/08/06 14:02:00 by tgrandpa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,18 +43,19 @@ void			find_tetr_pos(t_tetrimino *tetr)
 	i = -1;
 	counter = 0;
 	tetr->name = 'A' + name_i++;
+	tetr->counter = -1;
+	tetr->line_i = 0;
+	tetr->line_j = 0;
 	while (++i < 4)
 	{
 		j = -1;
 		while (++j < 4)
-		{
 			if (tetr->content[i][j] == '#')
 			{
 				tetr->content[i][j] = tetr->name;
 				tetr->min_pos[counter][0] = i;
 				tetr->min_pos[counter++][1] = j;
 			}
-		}
 	}
 	// show_min_pos(tetr->min_pos);
 	// ft_putchar(10);
@@ -64,13 +65,14 @@ void			find_tetr_pos(t_tetrimino *tetr)
 t_tetrimino		*read_tetriminos(int fd, t_tetrimino *tetr)
 {
 	t_tetrimino		*tetr_first;
+	t_tetrimino		*tetr_last;
 	int				i;
 	char			c;
 
 	i = -1;
 	tetr = (t_tetrimino*)malloc(sizeof(t_tetrimino));
-	tetr_first = tetr;
-	if (tetr)
+	tetr_last = NULL;
+	if ((tetr_first = tetr))
 		while (read(fd, tetr->content[++i], 5))
 		{
 			tetr->content[i][4] = 0;
@@ -81,10 +83,15 @@ t_tetrimino		*read_tetriminos(int fd, t_tetrimino *tetr)
 				if (read(fd, &c, 1))
 				{
 					tetr->next = (t_tetrimino*)malloc(sizeof(t_tetrimino));
+					tetr->prev = tetr_last;
+					tetr_last = tetr;
 					tetr = tetr->next;
 				}
 				else
+				{
+					tetr->prev = tetr_last;
 					tetr->next = NULL;
+				}
 			}
 		}
 	return (tetr_first);
